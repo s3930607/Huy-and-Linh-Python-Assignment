@@ -30,7 +30,7 @@ again.
 
 | Level | Sub-task A | Sub-task B |
 |-------|------------|------------|
-| 1 | `/home` landing | `/mission` mission statement |
+| 1 | `/` landing | `/mission` mission statement |
 | 2 | `/vaccination-rates` | `/infection-economy` |
 | 3 | `/improvement` | `/above-average` |
 
