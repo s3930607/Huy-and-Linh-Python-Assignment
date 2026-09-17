@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Infection by economy{% endblock %}
+
+{% block content %}
+<h1>Infection data by economic status</h1>
+<p class="lead">Reported cases per 100,000 people for one disease, one year, and
+one income group.</p>
+
+<form class="filters" method="get">
+  <div>
+    <label for="disease">Disease</label>
+    <select name="disease" id="disease">
+      {% for d in diseases %}
+      <option value="{{ d.id }}" {{ 'selected' if d.id == selected.disease }}>{{ d.description }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="economy">Income group</label>
+    <select name="economy" id="economy">
+      {% for e in economies %}
+      <option value="{{ e.economyID }}" {{ 'selected' if e.economyID == selected.economy }}>{{ e.phase }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="year">Year</label>
+    <select name="year" id="year">
+      {% for y in years %}
+      <option value="{{ y }}" {{ 'selected' if y == selected.year }}>{{ y }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {# The sort choice travels with the other filters instead of living on the
+     column headings, so the whole query is set in one place before submitting. #}
+  <div>
+    <label for="sort">Sort by</label>
+    <select name="sort" id="sort">
+      <option value="rate" {{ 'selected' if selected.sort == 'rate' }}>Cases per 100,000</option>
+      <option value="cases" {{ 'selected' if selected.sort == 'cases' }}>Total cases</option>
+      <option value="country" {{ 'selected' if selected.sort == 'country' }}>Country name</option>
+    </select>
+  </div>
+  <div>
+    <label for="dir">Order</label>
+    <select name="dir" id="dir">
+      <option value="desc" {{ 'selected' if selected.dir == 'desc' }}>Highest first</option>
+      <option value="asc" {{ 'selected' if selected.dir == 'asc' }}>Lowest first</option>
+    </select>
+  </div>
+  <button type="submit">Show</button>
+</form>
+
+<h2>Countries in this income group</h2>
+{% if rows %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Disease</th>
+        <th>Country</th>
+        <th>Income group</th>
+        <th>Year</th>
+        <th class="num">Cases</th>
+        <th class="num">Per 100,000</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.disease }}</td>
+        <td>{{ row.country }}</td>
+        <td>{{ row.economic_phase }}</td>
+        <td>{{ row.year }}</td>
+        <td class="num">{{ "{:,.0f}".format(row.cases) }}</td>
+        <td class="num">{{ row.cases_per_100k }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="note">{{ rows|length }} countries.</p>
+{% else %}
+  {% with hint = "Try another year or a different income group." %}{% include "partials/_empty.html" %}{% endwith %}
+{% endif %}
+
+<h2>All income groups compared</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Disease</th><th>Income group</th><th>Year</th><th class="num">Countries</th><th class="num">Total cases</th><th class="num">Per 100,000</th></tr>
+    </thead>
+    <tbody>
+      {% for row in totals %}
+      <tr>
+        <td>{{ row.disease }}</td>
+        <td>{{ row.phase }}</td>
+        <td>{{ row.year }}</td>
+        <td class="num">{{ row.countries }}</td>
+        <td class="num">{{ "{:,}".format(row.total_cases) }}</td>
+        <td class="num">{{ row.cases_per_100k }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="note">The rate for a group divides its total cases by its total
+population, so a large country is not outweighed by a small one.</p>
+{% endblock %}

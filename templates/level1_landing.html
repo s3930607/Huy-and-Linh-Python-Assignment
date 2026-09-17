@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Preventable infectious diseases{% endblock %}
+
+{% block content %}
+<h1>Preventable infectious diseases</h1>
+<p class="lead">Measles, rubella and pertussis are all preventable by vaccine, yet
+they still circulate. This site lets you look at what the reported numbers
+actually say, country by country and year by year.</p>
+
+<h2>What is in the data</h2>
+<div class="facts">
+  <div class="fact">
+    <span class="value">{{ facts.first_year }}&ndash;{{ facts.last_year }}</span>
+    <span class="label">Years covered</span>
+  </div>
+  <div class="fact">
+    <span class="value">{{ "{:,}".format(facts.countries) }}</span>
+    <span class="label">Countries and territories</span>
+  </div>
+  <div class="fact">
+    {# The raw number is over ten billion, which is unreadable in full. #}
+    <span class="value">{{ "{:.2f}".format(facts.total_doses / 1000000000) }} bn</span>
+    <span class="label">Vaccine doses recorded</span>
+  </div>
+  <div class="fact">
+    <span class="value">{{ "{:.1f}".format(facts.total_cases / 1000000) }} m</span>
+    <span class="label">Reported cases</span>
+  </div>
+</div>
+
+<h2>Diseases covered</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Disease</th><th class="num">Countries reporting</th></tr>
+    </thead>
+    <tbody>
+      {% for row in diseases %}
+      <tr>
+        <td>{{ row.description }}</td>
+        <td class="num">{{ row.countries_reporting }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="note">Not every country reports every disease, so these counts differ
+from the total number of countries above.</p>
+
+<h2>Where to go next</h2>
+<ul>
+  <li><a href="{{ url_for('level2.vaccination_rates') }}">Vaccination rates</a> &mdash; which countries reached their target for a vaccine in a given year.</li>
+  <li><a href="{{ url_for('level2.infection_economy') }}">Infection by economy</a> &mdash; how case rates compare across income groups.</li>
+  <li><a href="{{ url_for('level3.improvement') }}">Improvement</a> &mdash; which countries gained the most between two years.</li>
+  <li><a href="{{ url_for('level3.above_average') }}">Above average</a> &mdash; countries sitting above the global infection rate.</li>
+</ul>
+{% endblock %}

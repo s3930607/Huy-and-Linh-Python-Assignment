@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Above the global average{% endblock %}
+
+{% block content %}
+<h1>Countries above the global infection rate</h1>
+<p class="lead">The global rate for one disease and year, followed by every
+country reporting a higher rate than that.</p>
+
+<form class="filters" method="get">
+  <div>
+    <label for="disease">Disease</label>
+    <select name="disease" id="disease">
+      {% for d in diseases %}
+      <option value="{{ d.id }}" {{ 'selected' if d.id == selected.disease }}>{{ d.description }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="year">Year</label>
+    <select name="year" id="year">
+      {% for y in years %}
+      <option value="{{ y }}" {{ 'selected' if y == selected.year }}>{{ y }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="dir">Order</label>
+    <select name="dir" id="dir">
+      <option value="desc" {{ 'selected' if selected.dir == 'desc' }}>Highest first</option>
+      <option value="asc" {{ 'selected' if selected.dir == 'asc' }}>Lowest first</option>
+    </select>
+  </div>
+  <button type="submit">Show</button>
+</form>
+
+{% if rows|length > 1 %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Country</th><th>Disease</th><th class="num">Cases per 100,000</th><th>Year</th></tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      {# sort_group is 0 only on the global row, which the query pins to the top. #}
+      <tr class="{{ 'global' if row.sort_group == 0 }}">
+        <td>{{ row.country }}</td>
+        <td>{{ row.infection_type }}</td>
+        <td class="num">{{ row.rate_per_100k }}</td>
+        <td>{{ row.year }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="note">{{ rows|length - 1 }} countries are above the global rate.
+The global figure is total cases divided by total population, not an average of
+each country rate.</p>
+{% else %}
+  {% with hint = "No country exceeded the global rate for this combination." %}{% include "partials/_empty.html" %}{% endwith %}
+{% endif %}
+
+{% if missing %}
+<h2>Countries with no report for this disease and year</h2>
+<p class="note">{{ missing|length }} countries have no row at all in the infection
+data for {{ selected.year }}. They are absent from the table above, which is not
+the same as reporting zero cases.</p>
+<p>{% for row in missing %}{{ row.name }}{{ ", " if not loop.last }}{% endfor %}</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Vaccination rates{% endblock %}
+
+{% block content %}
+<h1>Vaccination rates by country and region</h1>
+<p class="lead">Countries that reached a share of their vaccination target for one
+vaccine in one year, and how each region compares.</p>
+
+{# method="get" keeps the choices in the URL, so a result can be bookmarked or
+   pasted to a team mate, and the selections survive a refresh. #}
+<form class="filters" method="get">
+  <div>
+    <label for="antigen">Vaccine</label>
+    <select name="antigen" id="antigen">
+      {% for a in antigens %}
+      <option value="{{ a.AntigenID }}" {{ 'selected' if a.AntigenID == selected.antigen }}>
+        {{ a.AntigenID }} &ndash; {{ a.name }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="year">Year</label>
+    <select name="year" id="year">
+      {% for y in years %}
+      <option value="{{ y }}" {{ 'selected' if y == selected.year }}>{{ y }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="region">Region</label>
+    <select name="region" id="region">
+      <option value="ALL" {{ 'selected' if selected.region == 'ALL' }}>All regions</option>
+      {% for r in regions %}
+      <option value="{{ r.RegionID }}" {{ 'selected' if r.RegionID == selected.region }}>{{ r.region }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="country">Country</label>
+    <select name="country" id="country">
+      <option value="ALL" {{ 'selected' if selected.country == 'ALL' }}>All countries</option>
+      {% for c in country_options %}
+      <option value="{{ c.CountryID }}" {{ 'selected' if c.CountryID == selected.country }}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="threshold">Target reached</label>
+    <select name="threshold" id="threshold">
+      {% for t in thresholds %}
+      <option value="{{ t }}" {{ 'selected' if t == selected.threshold }}>{{ t }}% or more</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit">Show</button>
+</form>
+
+<h2>Countries reaching {{ selected.threshold }}% of target</h2>
+{% if countries %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Vaccine</th><th>Year</th><th>Country</th><th>Region</th><th class="num">% of target</th></tr>
+    </thead>
+    <tbody>
+      {% for row in countries %}
+      <tr>
+        <td>{{ row.antigen }}</td>
+        <td>{{ row.year }}</td>
+        <td>{{ row.country }}</td>
+        <td>{{ row.region }}</td>
+        <td class="num">{{ row.pct_of_target }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="note">{{ countries|length }} {{ 'country' if countries|length == 1 else 'countries' }} listed.
+The two summaries below always cover whole regions, so the country choice does not
+narrow them. Figures above 100% are
+kept as reported: doses given exceeded the estimated target group.</p>
+{% else %}
+  {% with hint = "Try a later year, a lower threshold, or a wider country or region." %}{% include "partials/_empty.html" %}{% endwith %}
+{% endif %}
+
+<h2>Countries reaching the target, per region</h2>
+{% if per_region %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Region</th><th class="num">Countries met</th><th class="num">Average coverage</th></tr>
+    </thead>
+    <tbody>
+      {% for row in per_region %}
+      <tr>
+        <td>{{ row.region }}</td>
+        <td class="num">{{ row.countries_met }}</td>
+        <td class="num">{{ row.avg_coverage }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+  {% with hint = "Try a later year, a lower threshold, or a different region." %}{% include "partials/_empty.html" %}{% endwith %}
+{% endif %}
+
+<h2>Share of each region reaching the target</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Region</th><th class="num">Met</th><th class="num">With data</th><th class="num">Share of region</th></tr>
+    </thead>
+    <tbody>
+      {% for row in herd %}
+      <tr>
+        <td>{{ row.region }}</td>
+        <td class="num">{{ row.met }}</td>
+        <td class="num">{{ row.total_with_data }}</td>
+        <td class="num">{{ row.pct_of_region }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="note">"With data" counts only countries that reported a numeric coverage
+figure for this vaccine and year.</p>
+{% endblock %}

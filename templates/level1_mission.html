@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Mission{% endblock %}
+
+{% block content %}
+<h1>Our mission</h1>
+
+{% for section in sections %}
+  <h2>{{ section.heading }}</h2>
+  <p>{{ section.body }}</p>
+{% else %}
+  <p class="empty">No mission statement stored yet. Run <code>python db/setup_db.py</code>.</p>
+{% endfor %}
+
+<h2>Who this site is for</h2>
+{% if personas %}
+<div class="cards">
+  {% for p in personas %}
+  <div class="card">
+    <h4>{{ p.name }}</h4>
+    <div class="role">{{ p.role }}{% if p.age %}, {{ p.age }}{% endif %}</div>
+    <dl>
+      <dt>Goal</dt><dd>{{ p.goal }}</dd>
+      {% if p.frustration %}<dt>Frustration</dt><dd>{{ p.frustration }}</dd>{% endif %}
+      {% if p.tech_skill %}<dt>Confidence with technology</dt><dd>{{ p.tech_skill }}</dd>{% endif %}
+    </dl>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+  <p class="empty">No personas stored yet.</p>
+{% endif %}
+
+<h2>Project team</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Student number</th><th>Name</th><th>Role</th><th>Sub-task</th></tr>
+    </thead>
+    <tbody>
+      {% for member in team %}
+      <tr>
+        <td>{{ member.StudentID }}</td>
+        <td>{{ member.full_name }}</td>
+        <td>{{ member.role }}</td>
+        <td>{{ member.subtask }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="note">Personas and team details on this page are read from the database,
+not written into the page.</p>
+{% endblock %}

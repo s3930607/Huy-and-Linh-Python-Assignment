@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Immunisation Data{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="{{ url_for('level1.landing') }}">Immunisation Data</a>
+  <nav>
+    {# request.endpoint tells us which route is being served, so the current page
+       can be marked without passing an extra variable from every view. #}
+    <a href="{{ url_for('level1.landing') }}"
+       class="{{ 'current' if request.endpoint == 'level1.landing' }}">Home</a>
+    <a href="{{ url_for('level1.mission') }}"
+       class="{{ 'current' if request.endpoint == 'level1.mission' }}">Mission</a>
+    <a href="{{ url_for('level2.vaccination_rates') }}"
+       class="{{ 'current' if request.endpoint == 'level2.vaccination_rates' }}">Vaccination rates</a>
+    <a href="{{ url_for('level2.infection_economy') }}"
+       class="{{ 'current' if request.endpoint == 'level2.infection_economy' }}">Infection by economy</a>
+    <a href="{{ url_for('level3.improvement') }}"
+       class="{{ 'current' if request.endpoint == 'level3.improvement' }}">Improvement</a>
+    <a href="{{ url_for('level3.above_average') }}"
+       class="{{ 'current' if request.endpoint == 'level3.above_average' }}">Above average</a>
+  </nav>
+</header>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  <p>Data source: immunisation database supplied with the studio project. Years 2000&ndash;2024.</p>
+</footer>
+
+</body>
+</html>
