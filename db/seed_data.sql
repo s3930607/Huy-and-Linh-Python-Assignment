@@ -12,5 +12,5 @@ INSERT INTO Persona (name, role, age, goal, frustration, tech_skill) VALUES
 
 DELETE FROM TeamMember;
 INSERT INTO TeamMember (StudentID, full_name, role, subtask) VALUES
-    ('S3930607', 'Hoang Quoc Huy', '', ''),
-    ('S4205952', 'Linh Nguyen Ha Phuong', '', '');
+    ('S3930607', 'Hoang Quoc Huy', 'Code', 'A'),
+    ('S4205952', 'Linh Nguyen Ha Phuong', 'Code', 'B');
